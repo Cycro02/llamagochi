@@ -1,221 +1,411 @@
-/* LlamaGochi – Estilo consola retro */
+/* LlamaGochi 2026 – Glassmorphism App */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  --glass-bg:    rgba(255, 255, 255, 0.06);
+  --glass-border:rgba(255, 255, 255, 0.12);
+  --glass-blur:  blur(24px);
+  --accent-1:    #a855f7;
+  --accent-2:    #6366f1;
+  --accent-3:    #ec4899;
+  --glow-purple: rgba(168, 85, 247, 0.35);
+  --glow-blue:   rgba(99, 102, 241, 0.35);
+  --text-bright: #f0f0ff;
+  --text-dim:    rgba(200, 200, 240, 0.55);
+  --radius-lg:   20px;
+  --radius-md:   12px;
+  --radius-sm:   8px;
+}
+
 body {
-  background: #1a1a2e;
+  background: #0b0f1a;
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(236, 72, 153, 0.06) 0%, transparent 60%);
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ─── Carcasa de la consola ─────────────────────────────────────────────── */
-#console-shell {
-  background: #e8e0d0;
-  border-radius: 16px 16px 40px 40px;
-  padding: 16px 20px 24px;
-  width: 320px;
+/* ─── Shell principal ─────────────────────────────────────────────────────── */
+
+#app-shell {
+  width: 340px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
   box-shadow:
-    0 0 0 3px #b0a890,
-    0 8px 32px rgba(0,0,0,0.6),
-    inset 0 2px 0 rgba(255,255,255,0.4);
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px var(--glow-purple);
   user-select: none;
 }
 
-/* ─── Barra superior ────────────────────────────────────────────────────── */
-#console-top {
+/* ─── Header del pet ─────────────────────────────────────────────────────── */
+
+#pet-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
 }
 
-.console-title {
-  font-size: 8px;
-  color: #5c4a1e;
-  letter-spacing: 2px;
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-}
-
-/* ─── Bisel de pantalla ─────────────────────────────────────────────────── */
-#screen-bezel {
-  background: #2a2a3a;
-  border-radius: 8px;
-  padding: 8px;
-  box-shadow:
-    inset 0 2px 8px rgba(0,0,0,0.8),
-    0 2px 4px rgba(255,255,255,0.1);
-  margin-bottom: 16px;
-}
-
-#screen-inner {
-  position: relative;
-  background: #0a1628;
-  border-radius: 4px;
-  overflow: hidden;
-  line-height: 0;
-}
-
-#game-canvas {
-  display: block;
-  width: 100%;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-}
-
-/* ─── Overlay de pantallas HTML ─────────────────────────────────────────── */
-#screen-overlay {
-  position: absolute;
-  inset: 0;
-  background: #0a1628;
+#pet-identity {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 12px;
+  gap: 8px;
 }
 
-.overlay-panel {
-  width: 100%;
-  color: #c0e0c0;
+#pet-name-display {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 0.5px;
 }
 
-.overlay-panel h2 {
-  font-size: 7px;
-  text-align: center;
-  margin-bottom: 16px;
-  color: #80ff80;
-  text-shadow: 0 0 8px #40ff40;
+#pet-stage-badge {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--accent-1);
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 20px;
+  padding: 2px 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.overlay-panel label {
-  display: block;
-  font-size: 6px;
-  color: #80c080;
-  margin-bottom: 6px;
+#pet-coins-display {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fbbf24;
 }
 
-.overlay-panel input[type="text"] {
-  width: 100%;
-  background: #0d2010;
-  border: 1px solid #40a040;
-  color: #80ff80;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  padding: 6px;
-  border-radius: 2px;
-  margin-top: 4px;
-  margin-bottom: 12px;
-  outline: none;
-}
+.coin-icon { font-size: 14px; }
 
-.overlay-panel input[type="text"]:focus {
-  border-color: #80ff80;
-  box-shadow: 0 0 4px #40ff40;
-}
+/* ─── Stat pills ─────────────────────────────────────────────────────────── */
 
-#species-selector {
+#stat-pills {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
   margin-bottom: 12px;
 }
 
-.species-btn {
-  background: #0d2010;
-  border: 1px solid #40a040;
-  color: #80c080;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 6px;
-  padding: 6px 4px;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: all 0.1s;
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.3s;
 }
 
-.species-btn:hover, .species-btn.active {
-  background: #1a4020;
-  border-color: #80ff80;
-  color: #80ff80;
-  box-shadow: 0 0 4px #40ff40;
+.stat-icon {
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
-#btn-create {
+.stat-bar-wrap {
+  flex: 1;
+  height: 5px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.stat-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease, background 0.5s;
+}
+
+#stat-health   .stat-bar { background: linear-gradient(90deg, #f87171, #fb923c); }
+#stat-happiness .stat-bar { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+#stat-hunger   .stat-bar { background: linear-gradient(90deg, #4ade80, #22c55e); }
+#stat-energy   .stat-bar { background: linear-gradient(90deg, #60a5fa, #818cf8); }
+
+/* Estado crítico: pill parpadea rojo */
+.stat-pill.critical {
+  border-color: rgba(248, 113, 113, 0.5);
+  animation: pulse-critical 1s infinite;
+}
+
+@keyframes pulse-critical {
+  0%, 100% { box-shadow: none; }
+  50%       { box-shadow: 0 0 8px rgba(248, 113, 113, 0.5); }
+}
+
+/* ─── Zona del pet ───────────────────────────────────────────────────────── */
+
+#pet-area {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: visible;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#game-canvas {
+  display: block;
   width: 100%;
-  background: #1a4020;
-  border: 2px solid #80ff80;
-  color: #80ff80;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  padding: 8px;
-  border-radius: 2px;
-  cursor: pointer;
-  text-shadow: 0 0 6px #40ff40;
-  transition: all 0.1s;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border);
+  background: #0d1425;
 }
 
-#btn-create:hover {
-  background: #2a6030;
-  box-shadow: 0 0 8px #40ff40;
+/* ─── Speech bubble ──────────────────────────────────────────────────────── */
+
+#speech-bubble {
+  position: relative;
+  background: rgba(255,255,255,0.92);
+  color: #1a1a2e;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+  transform: translateY(-6px) scale(0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 10;
 }
 
-#btn-create:active {
-  transform: scale(0.97);
+#speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: rgba(255,255,255,0.92);
+  border-bottom: none;
 }
 
-/* ─── Fila de botones ───────────────────────────────────────────────────── */
-#buttons-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 4px;
-  margin-bottom: 6px;
+#speech-bubble.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
-.game-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+/* ─── Botones de acción ──────────────────────────────────────────────────── */
+
+#action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 52px 52px;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 12px 8px;
   border: none;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 9px;
+  border-radius: var(--radius-md);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
   cursor: pointer;
-  transition: transform 0.08s, box-shadow 0.08s;
-  box-shadow: 0 4px 0 rgba(0,0,0,0.4);
+  transition: transform 0.1s, box-shadow 0.1s, filter 0.1s;
+  letter-spacing: 0.3px;
 }
 
-.game-btn:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.4);
-}
-
-.btn-a { background: #e05050; color: #fff; box-shadow: 0 4px 0 #803030; }
-.btn-b { background: #e0a030; color: #fff; box-shadow: 0 4px 0 #806010; }
-.btn-c { background: #4080e0; color: #fff; box-shadow: 0 4px 0 #204080; }
-.btn-d { background: #40b060; color: #fff; box-shadow: 0 4px 0 #206030; }
-
-.btn-a:active { box-shadow: 0 1px 0 #803030; }
-.btn-b:active { box-shadow: 0 1px 0 #806010; }
-.btn-c:active { box-shadow: 0 1px 0 #204080; }
-.btn-d:active { box-shadow: 0 1px 0 #206030; }
-
-#console-logo {
-  font-size: 20px;
-  opacity: 0.7;
-}
-
-/* ─── Labels de botones ─────────────────────────────────────────────────── */
-#btn-labels {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 6px;
+.action-btn:active {
+  transform: scale(0.94) translateY(1px);
+  filter: brightness(0.85);
 }
 
 .btn-label {
-  font-size: 5px;
-  color: #8a7a60;
-  text-align: center;
-  width: 44px;
+  display: block;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
 }
+
+.btn-a {
+  background: linear-gradient(135deg, #f472b6, #a855f7);
+  box-shadow: 0 4px 14px rgba(244, 114, 182, 0.4);
+}
+.btn-a:hover { box-shadow: 0 6px 20px rgba(244, 114, 182, 0.55); }
+
+.btn-b {
+  background: linear-gradient(135deg, #60a5fa, #818cf8);
+  box-shadow: 0 4px 14px rgba(96, 165, 250, 0.4);
+}
+.btn-b:hover { box-shadow: 0 6px 20px rgba(96, 165, 250, 0.55); }
+
+.btn-nav {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid var(--glass-border);
+  color: var(--text-bright);
+  font-size: 14px;
+}
+.btn-nav:hover { background: rgba(255,255,255,0.15); }
+.btn-nav .btn-label { font-size: 14px; }
+
+/* ─── Screen overlay: Nuevo pet ─────────────────────────────────────────── */
+
+#screen-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 26, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 24px;
+}
+
+#new-pet-screen {
+  width: 100%;
+  max-width: 360px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 40px var(--glow-purple);
+  text-align: center;
+}
+
+.new-pet-llama {
+  font-size: 56px;
+  margin-bottom: 12px;
+  animation: bob 2s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+#new-pet-screen h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-bright);
+  margin-bottom: 4px;
+}
+
+.new-pet-subtitle {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+.field-label {
+  display: block;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+#pet-name {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-bright);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 14px;
+  outline: none;
+  margin-bottom: 20px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#pet-name:focus {
+  border-color: var(--accent-1);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+}
+
+#pet-name::placeholder { color: rgba(200,200,240,0.3); }
+
+#species-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.species-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.species-emoji { font-size: 22px; }
+
+.species-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  transition: color 0.2s;
+}
+
+.species-btn:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.species-btn.active {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: var(--accent-1);
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.3);
+}
+
+.species-btn.active .species-name { color: var(--accent-1); }
+
+#btn-create {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  border: none;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(168, 85, 247, 0.45);
+  transition: transform 0.1s, box-shadow 0.1s;
+  letter-spacing: 0.3px;
+}
+
+#btn-create:hover  { box-shadow: 0 8px 30px rgba(168, 85, 247, 0.6); }
+#btn-create:active { transform: scale(0.97); }

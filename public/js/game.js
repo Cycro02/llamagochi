@@ -34,8 +34,6 @@ class Game {
 
     this._saveTimer  = null;
     this._tickTimer  = null;
-    this._notifTimer = null;
-    this.notification = null;
 
     this._setupButtons();
     this._setupNewPetScreen();
@@ -123,10 +121,15 @@ class Game {
         this.pet.tick();
         if (this.pet.stage !== prevStage) {
           this.screen = SCREENS.EVOLUTION;
+          Renderer.showDialog(`¡Estoy creciendo! ¡Mira qué grande! 🌟`, 4000);
         }
         if (this.pet.is_dead) {
-          this._showNotification('Tu llama murió... 😢');
+          this._showNotification('Adiós... te quise mucho 😢', 5000);
         }
+        // Alertas narrativas de stats críticos
+        if (this.pet.hunger < 20)    Renderer.showDialog('¡Tengo muuucha hambre! 😭');
+        else if (this.pet.health < 20) Renderer.showDialog('No me siento bien... 🤒');
+        else if (this.pet.energy < 20) Renderer.showDialog('Estoy muy cansado... 😴');
       }
     }, 10 * 60 * 1000);
 
@@ -138,7 +141,6 @@ class Game {
       if (this.pet) {
         if (this.screen !== SCREENS.MINIGAME) {
           this.renderer.render(this.pet, this.screen, this.menuState);
-          if (this.notification) this._drawNotification();
         }
       }
       requestAnimationFrame(renderLoop);
@@ -148,6 +150,16 @@ class Game {
     // Trigger de tick inmediato para compensar tiempo pasado sin jugar
     if (this.pet) this.pet.tick();
     this._updateButtonLabels();
+
+    // Saludo narrativo al iniciar
+    const greetings = [
+      `¡Hola! ¡Soy ${this.pet.name}! 🦙`,
+      `¡Qué bueno verte de nuevo! ✨`,
+      `¡Hoy va a ser un gran día! 🌟`,
+    ];
+    setTimeout(() => {
+      Renderer.showDialog(greetings[Math.floor(Math.random() * greetings.length)], 3000);
+    }, 800);
   }
 
   // ─── Input de botones ─────────────────────────────────────────────────
@@ -199,10 +211,10 @@ class Game {
     });
     if (food) {
       this.pet.feed(food.id);
-      this._showNotification('¡Nam nam!');
+      Renderer.showDialog('¡Mmm qué rico! ¡Gracias! 😋');
     } else {
-      if (this.pet.play()) this._showNotification('¡Yay!');
-      else this._showNotification('Sin energía...');
+      if (this.pet.play()) Renderer.showDialog('¡Yay! ¡A jugar! 🎉');
+      else Renderer.showDialog('Estoy muy cansado para jugar... 😴');
     }
   }
 
@@ -210,26 +222,25 @@ class Game {
     switch (idx) {
       case 0: // Alimentar
         if (this.pet.hunger < 95) {
-          // Alimentar con lo que haya en inventario
           const food = this.pet.inventory.find(e => ITEM_CATALOG.find(i => i.id === e.id && i.type === 0));
-          if (food) { this.pet.feed(food.id); this._showNotification('¡Mmm!'); }
-          else { this._showNotification('Sin comida en inventario'); }
-        } else this._showNotification('No tiene hambre');
+          if (food) { this.pet.feed(food.id); Renderer.showDialog('¡Delicioso! ¡Gracias! 😋'); }
+          else { Renderer.showDialog('No tengo comida... ¿me traes algo? 🍽'); }
+        } else Renderer.showDialog('¡Estoy llena, no puedo más! 😅');
         break;
       case 1: // Jugar
         if (this.pet.play()) {
           this._startMiniGame();
           return;
-        } else this._showNotification('Muy cansado para jugar');
+        } else Renderer.showDialog('Estoy muy cansado para jugar... 😴');
         break;
       case 2: // Dormir
-        if (this.pet.sleep_action()) this._showNotification('Buenas noches...');
-        else { this.pet.wake_up(); this._showNotification('¡Despierta!'); }
+        if (this.pet.sleep_action()) Renderer.showDialog('Buenas noches... 💤 zzz');
+        else { this.pet.wake_up(); Renderer.showDialog('¡Buenos días! ¡A despertar! ☀️'); }
         break;
       case 3: // Curar
         const med = this.pet.inventory.find(e => ITEM_CATALOG.find(i => i.id === e.id && i.type === 2));
-        if (med) { this.pet.heal(med.id); this._showNotification('+salud'); }
-        else this._showNotification('Sin medicina');
+        if (med) { this.pet.heal(med.id); Renderer.showDialog('¡Me siento mucho mejor! 💊 ✨'); }
+        else Renderer.showDialog('No tengo medicina... 😟');
         break;
       case 4: // Tienda
         this.screen = SCREENS.SHOP;
@@ -255,9 +266,9 @@ class Game {
   _buyItem(idx) {
     if (this.pet.buyItem(idx)) {
       const item = ITEM_CATALOG.find(i => i.id === idx);
-      this._showNotification(`Comprado: ${item?.name}`);
+      Renderer.showDialog(`¡Yay! ¡Tengo ${item?.name}! 🛍️`);
     } else {
-      this._showNotification('Sin monedas');
+      Renderer.showDialog('No tengo suficientes monedas 😢');
     }
   }
 
@@ -269,13 +280,11 @@ class Game {
     if (!item) return;
 
     if (item.type === 0 || item.type === 2) {
-      // Comida o medicina: usar directo
       const ok = item.type === 0 ? this.pet.feed(entry.id) : this.pet.heal(entry.id);
-      if (ok) this._showNotification(`Usaste: ${item.name}`);
+      if (ok) Renderer.showDialog(item.type === 0 ? `¡${item.name}! ¡Riquísimo! 😋` : `¡Me curé con ${item.name}! 💊`);
     } else if (item.type === 3 || item.type === 4) {
-      // Ropa/mueble: equipar
       if (this.wardrobe.equip(entry.id, this.pet)) {
-        this._showNotification(`Equipado: ${item.name}`);
+        Renderer.showDialog(`¡Me puse ${item.name}! ¡Qué guapa! 💃`);
       }
     }
     this.menuState.selected = Math.min(this.menuState.selected, this.pet.inventory.length - 1);
@@ -287,7 +296,7 @@ class Game {
     this.screen = SCREENS.MINIGAME;
     this.minigames.start(type, this.pet, (coins, msg) => {
       if (coins > 0) { this.pet.coins += coins; }
-      this._showNotification(msg);
+      Renderer.showDialog(coins > 0 ? `¡Gané ${coins} monedas! 🎉` : `¡La próxima vez gano! 💪`);
       this.screen = SCREENS.HOUSE;
       this._updateButtonLabels();
     });
@@ -298,18 +307,18 @@ class Game {
     const result = this.wardrobe.openPack(packType, this.pet);
     if (!result.ok) { this._showNotification(result.reason); return; }
     const names = result.items.map(i => i.name).join(', ');
-    this._showNotification(`Sobre ${packType}: ${names}`);
+    Renderer.showDialog(`¡Sobre ${packType}! Obtuve: ${names} ✨`);
   }
 
   async _showLeaderboard() {
     try {
       const resp = await fetch('/api/leaderboard');
       const data = await resp.json();
-      if (data.length === 0) { this._showNotification('Leaderboard vacío'); return; }
-      const top = data.slice(0, 3).map((r, i) => `${i+1}. ${r.pet_name} Lv${r.level}`).join(' | ');
-      this._showNotification(top, 4000);
+      if (data.length === 0) { Renderer.showDialog('¡El leaderboard está vacío!'); return; }
+      const top = data.slice(0, 3).map((r, i) => `${i+1}. ${r.pet_name} Lv${r.level}`).join(' · ');
+      Renderer.showDialog(top, 5000);
     } catch (e) {
-      this._showNotification('Error de red');
+      Renderer.showDialog('No pude conectarme 📡');
     }
   }
 
@@ -324,25 +333,6 @@ class Game {
         body: JSON.stringify({ device_id: this.deviceId, pet: this.pet.toJson() })
       });
     } catch (e) { /* silencioso */ }
-  }
-
-  // ─── Notificaciones ───────────────────────────────────────────────────
-
-  _showNotification(msg, duration = 2000) {
-    this.notification = msg;
-    clearTimeout(this._notifTimer);
-    this._notifTimer = setTimeout(() => { this.notification = null; }, duration);
-  }
-
-  _drawNotification() {
-    if (!this.notification) return;
-    const ctx = this.renderer.ctx;
-    const text = this.notification;
-    ctx.fillStyle = 'rgba(0,0,0,0.75)';
-    ctx.fillRect(10, 130, 220, 30);
-    ctx.strokeStyle = '#40a040';
-    ctx.strokeRect(10, 130, 220, 30);
-    this.renderer._drawText(text, 14, 151, '#80ff80', 5);
   }
 
   // ─── Labels de botones ────────────────────────────────────────────────

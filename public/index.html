@@ -5,52 +5,107 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LlamaGochi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
-  <div id="console-shell">
-    <div id="console-top">
-      <span class="console-title">LlamaGochi</span>
+  <div id="app-shell">
+    <!-- Header: nombre + nivel + monedas -->
+    <div id="pet-header">
+      <div id="pet-identity">
+        <span id="pet-name-display">LlamaGochi</span>
+        <span id="pet-stage-badge">Huevo</span>
+      </div>
+      <div id="pet-coins-display">
+        <span class="coin-icon">🪙</span>
+        <span id="coins-amount">0</span>
+      </div>
     </div>
 
-    <div id="screen-bezel">
-      <div id="screen-inner">
-        <canvas id="game-canvas" width="240" height="320"></canvas>
-        <div id="screen-overlay" style="display:none">
-          <!-- Pantalla de creación de pet -->
-          <div id="new-pet-screen" class="overlay-panel">
-            <h2>Nuevo Llamagochi</h2>
-            <label>Nombre:
-              <input type="text" id="pet-name" maxlength="10" placeholder="Max 10 chars">
-            </label>
-            <label>Especie:</label>
-            <div id="species-selector">
-              <button class="species-btn active" data-species="0">🔥 Fuego</button>
-              <button class="species-btn" data-species="1">💧 Agua</button>
-              <button class="species-btn" data-species="2">🌿 Planta</button>
-              <button class="species-btn" data-species="3">⚡ Eléctrica</button>
-            </div>
-            <button id="btn-create">¡Crear!</button>
-          </div>
+    <!-- Barras de stats -->
+    <div id="stat-pills">
+      <div class="stat-pill" id="stat-health">
+        <span class="stat-icon">♥</span>
+        <div class="stat-bar-wrap">
+          <div class="stat-bar" id="bar-health" style="width:100%"></div>
+        </div>
+      </div>
+      <div class="stat-pill" id="stat-happiness">
+        <span class="stat-icon">★</span>
+        <div class="stat-bar-wrap">
+          <div class="stat-bar" id="bar-happiness" style="width:100%"></div>
+        </div>
+      </div>
+      <div class="stat-pill" id="stat-hunger">
+        <span class="stat-icon">🍽</span>
+        <div class="stat-bar-wrap">
+          <div class="stat-bar" id="bar-hunger" style="width:100%"></div>
+        </div>
+      </div>
+      <div class="stat-pill" id="stat-energy">
+        <span class="stat-icon">⚡</span>
+        <div class="stat-bar-wrap">
+          <div class="stat-bar" id="bar-energy" style="width:100%"></div>
         </div>
       </div>
     </div>
 
-    <div id="buttons-row">
-      <button class="game-btn btn-a" id="btn-a">A</button>
-      <button class="game-btn btn-b" id="btn-b">B</button>
-      <div id="console-logo">🦙</div>
-      <button class="game-btn btn-c" id="btn-c">C</button>
-      <button class="game-btn btn-d" id="btn-d">D</button>
+    <!-- Zona del pet -->
+    <div id="pet-area">
+      <div id="speech-bubble">
+        <span id="speech-text">¡Hola!</span>
+      </div>
+      <canvas id="game-canvas" width="240" height="260"></canvas>
     </div>
 
-    <div id="btn-labels">
-      <span id="label-a" class="btn-label">Acción</span>
-      <span id="label-b" class="btn-label">Menú</span>
-      <span></span>
-      <span id="label-c" class="btn-label">▲</span>
-      <span id="label-d" class="btn-label">▼</span>
+    <!-- Botones de acción -->
+    <div id="action-row">
+      <button class="action-btn btn-a" id="btn-a">
+        <span class="btn-label" id="label-a">Acción</span>
+      </button>
+      <button class="action-btn btn-b" id="btn-b">
+        <span class="btn-label" id="label-b">Menú</span>
+      </button>
+      <button class="action-btn btn-nav" id="btn-c">
+        <span class="btn-label" id="label-c">▲</span>
+      </button>
+      <button class="action-btn btn-nav" id="btn-d">
+        <span class="btn-label" id="label-d">▼</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Pantalla de nuevo pet (overlay de página completa) -->
+  <div id="screen-overlay" style="display:none">
+    <div id="new-pet-screen">
+      <div class="new-pet-llama">🦙</div>
+      <h2>Nuevo LlamaGochi</h2>
+      <p class="new-pet-subtitle">Tu compañero de vida virtual</p>
+
+      <label class="field-label">Nombre</label>
+      <input type="text" id="pet-name" maxlength="10" placeholder="Ponle un nombre...">
+
+      <label class="field-label">Especie</label>
+      <div id="species-selector">
+        <button class="species-btn active" data-species="0">
+          <span class="species-emoji">🔥</span>
+          <span class="species-name">Fuego</span>
+        </button>
+        <button class="species-btn" data-species="1">
+          <span class="species-emoji">💧</span>
+          <span class="species-name">Agua</span>
+        </button>
+        <button class="species-btn" data-species="2">
+          <span class="species-emoji">🌿</span>
+          <span class="species-name">Planta</span>
+        </button>
+        <button class="species-btn" data-species="3">
+          <span class="species-emoji">⚡</span>
+          <span class="species-name">Eléctrica</span>
+        </button>
+      </div>
+
+      <button id="btn-create">Adoptar mi LlamaGochi ✨</button>
     </div>
   </div>
 
