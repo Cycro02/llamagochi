@@ -277,5 +277,3 @@ class MiniGames {
     this.renderer._drawText('[C]▲  [D]▼  [A] OK  [B] Salir', 14, SCREEN_H - 10, '#404040', 5);
   }
 }
-
-const SCREEN_H = 320;
