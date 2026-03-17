@@ -61,6 +61,12 @@ db.exec(`
     host_id     TEXT NOT NULL,
     created_at  TEXT DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS web_pets (
+    device_id   TEXT PRIMARY KEY,
+    pet_json    TEXT NOT NULL,
+    updated_at  INTEGER DEFAULT (unixepoch())
+  );
 `);
 
 // Insertar evento de ejemplo si no existe

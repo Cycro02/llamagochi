@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LlamaGochi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+  <div id="console-shell">
+    <div id="console-top">
+      <span class="console-title">LlamaGochi</span>
+    </div>
+
+    <div id="screen-bezel">
+      <div id="screen-inner">
+        <canvas id="game-canvas" width="240" height="320"></canvas>
+        <div id="screen-overlay" style="display:none">
+          <!-- Pantalla de creación de pet -->
+          <div id="new-pet-screen" class="overlay-panel">
+            <h2>Nuevo Llamagochi</h2>
+            <label>Nombre:
+              <input type="text" id="pet-name" maxlength="10" placeholder="Max 10 chars">
+            </label>
+            <label>Especie:</label>
+            <div id="species-selector">
+              <button class="species-btn active" data-species="0">🔥 Fuego</button>
+              <button class="species-btn" data-species="1">💧 Agua</button>
+              <button class="species-btn" data-species="2">🌿 Planta</button>
+              <button class="species-btn" data-species="3">⚡ Eléctrica</button>
+            </div>
+            <button id="btn-create">¡Crear!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="buttons-row">
+      <button class="game-btn btn-a" id="btn-a">A</button>
+      <button class="game-btn btn-b" id="btn-b">B</button>
+      <div id="console-logo">🦙</div>
+      <button class="game-btn btn-c" id="btn-c">C</button>
+      <button class="game-btn btn-d" id="btn-d">D</button>
+    </div>
+
+    <div id="btn-labels">
+      <span id="label-a" class="btn-label">Acción</span>
+      <span id="label-b" class="btn-label">Menú</span>
+      <span></span>
+      <span id="label-c" class="btn-label">▲</span>
+      <span id="label-d" class="btn-label">▼</span>
+    </div>
+  </div>
+
+  <script src="js/pet.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/minigames.js"></script>
+  <script src="js/wardrobe.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

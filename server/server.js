@@ -1,7 +1,7 @@
 /**
- * Tamagotchi Next Level – Backend Social
+ * LlamaGochi – Backend Social + Web Game
  *
- * Endpoints:
+ * Endpoints sociales (ESP32 + Web):
  *   POST /api/pets/sync          – Subir estado del pet al leaderboard
  *   GET  /api/leaderboard        – Top 10 pets
  *   GET  /api/pets/online        – Pets en línea (vistos en última hora)
@@ -11,6 +11,11 @@
  *   POST /api/gifts/:deviceId/claim – Marcar regalos como reclamados
  *   GET  /api/events/current     – Evento temporal activo
  *   POST /api/voice/transcribe   – Transcribir audio con Whisper
+ *
+ * Endpoints del juego web:
+ *   POST /api/game/new           – Crear nuevo pet web
+ *   GET  /api/game/load/:deviceId – Cargar pet guardado
+ *   POST /api/game/save          – Guardar estado del pet
  */
 
 const express = require('express');
@@ -24,6 +29,11 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json({ limit: '5mb' }));
 app.use(express.raw({ type: 'application/octet-stream', limit: '5mb' }));
+
+// Servir frontend estático
+app.use(express.static(path.join(__dirname, '..', 'public')));
+// Servir sprites
+app.use('/sprites', express.static(path.join(__dirname, '..', 'sprites')));
 
 // ─── Sync del pet ─────────────────────────────────────────────────────────────
 app.post('/api/pets/sync', (req, res) => {
@@ -202,17 +212,93 @@ app.post('/api/voice/transcribe', (req, res) => {
   });
 });
 
+// ─── Juego Web ────────────────────────────────────────────────────────────────
+
+// Crear nuevo pet
+app.post('/api/game/new', (req, res) => {
+  const { name, species } = req.body;
+  if (!name) return res.status(400).json({ error: 'Nombre requerido' });
+
+  const device_id = 'web_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  const pet = {
+    name,
+    species: parseInt(species) || 0,
+    stage: 0,
+    hunger: 80,
+    happiness: 80,
+    health: 100,
+    energy: 80,
+    coins: 50,
+    xp: 0,
+    level: 1,
+    age_days: 0,
+    birth_timestamp: Date.now(),
+    last_tick: Date.now(),
+    evolution_key: '',
+    personality: {
+      curiosity:    Math.floor(Math.random() * 60) + 20,
+      appetite:     Math.floor(Math.random() * 60) + 20,
+      energy_trait: Math.floor(Math.random() * 60) + 20,
+      sociability:  Math.floor(Math.random() * 60) + 20,
+      stubbornness: Math.floor(Math.random() * 60) + 20
+    },
+    wardrobe: { hat: -1, shirt: -1, pants: -1, shoes: -1, accessory: -1 },
+    house: { bed: -1, furniture_l: -1, furniture_r: -1, decor_top: -1, wallpaper: 0, floor: 0 },
+    inventory: [],
+    care_play_count: 0,
+    care_feed_count: 0,
+    care_sleep_count: 0,
+    games_played_today: 0,
+    last_game_day: 0
+  };
+
+  db.prepare(`
+    INSERT OR REPLACE INTO web_pets (device_id, pet_json, updated_at)
+    VALUES (?, ?, unixepoch())
+  `).run(device_id, JSON.stringify(pet));
+
+  res.json({ device_id, pet });
+});
+
+// Cargar pet guardado
+app.get('/api/game/load/:deviceId', (req, res) => {
+  const row = db.prepare('SELECT pet_json FROM web_pets WHERE device_id = ?')
+               .get(req.params.deviceId);
+  if (!row) return res.status(404).json({ error: 'Pet no encontrado' });
+  res.json({ device_id: req.params.deviceId, pet: JSON.parse(row.pet_json) });
+});
+
+// Guardar estado del pet
+app.post('/api/game/save', (req, res) => {
+  const { device_id, pet } = req.body;
+  if (!device_id || !pet) return res.status(400).json({ error: 'Faltan campos' });
+
+  db.prepare(`
+    INSERT OR REPLACE INTO web_pets (device_id, pet_json, updated_at)
+    VALUES (?, ?, unixepoch())
+  `).run(device_id, JSON.stringify(pet));
+
+  // Sincronizar con leaderboard
+  const score = (pet.level || 1) * 100 + (pet.age_days || 0) * 10;
+  db.prepare(`
+    INSERT INTO leaderboard (device_id, pet_name, evo_key, level, age_days, score, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(device_id) DO UPDATE SET
+      pet_name = excluded.pet_name, evo_key = excluded.evo_key,
+      level = excluded.level, age_days = excluded.age_days,
+      score = excluded.score, updated_at = CURRENT_TIMESTAMP
+  `).run(device_id, pet.name, pet.evolution_key || '', pet.level || 1, pet.age_days || 0, score);
+
+  res.json({ ok: true });
+});
+
 // ─── Iniciar servidor ─────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(`Tamagotchi Server corriendo en http://localhost:${PORT}`);
-  console.log('Endpoints disponibles:');
+  console.log(`LlamaGochi Server corriendo en http://localhost:${PORT}`);
+  console.log('  POST /api/game/new');
+  console.log('  GET  /api/game/load/:deviceId');
+  console.log('  POST /api/game/save');
   console.log('  POST /api/pets/sync');
   console.log('  GET  /api/leaderboard');
   console.log('  GET  /api/pets/online');
-  console.log('  POST /api/visit/:deviceId');
-  console.log('  POST /api/gift');
-  console.log('  GET  /api/gifts/:deviceId');
-  console.log('  POST /api/gifts/:deviceId/claim');
-  console.log('  GET  /api/events/current');
-  console.log('  POST /api/voice/transcribe');
 });
